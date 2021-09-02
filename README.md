@@ -1,2 +1,3 @@
-# chart
-zed-csi helm chart
+# Zed CSI Helm Chart
+
+TODO
