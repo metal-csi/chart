@@ -1,4 +1,5 @@
 {{- if .Values.clusterRole.create -}}
+
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -60,6 +61,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ include "zed-csi.serviceAccountName" . }}
+    namespace: '{{ .Release.Namespace }}'
 roleRef:
   kind: ClusterRole
   name: {{ include "zed-csi.clusterRoleName" . }}

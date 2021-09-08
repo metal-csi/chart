@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "zed-csi.fullname" . }}
+  labels:
+    {{- include "zed-csi.labels" . | nindent 4 }}
+data:
+  {{- with .Values.config }}
+  zed-csi.yml: |
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

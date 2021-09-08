@@ -5,11 +5,11 @@ image:
   repository: ghcr.io/zed-csi/zed-csi
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: ''
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -18,7 +18,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: ''
 
 clusterRole:
   # Specifies whether a service account should be created
@@ -27,14 +27,17 @@ clusterRole:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: ''
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  privileged: true
+  allowPrivilegeEscalation: true
   # capabilities:
   #   drop:
   #   - ALL
@@ -42,11 +45,8 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 80
-
-resources: {}
+resources:
+  {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -59,3 +59,40 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+config:
+  node:
+    initiator_iqn_mode:
+      type: detect
+    control_mode:
+      type: local
+      sudo: true
+
+  controller:
+    control_mode:
+      type: ssh
+      sudo: true
+      user: 'user'
+      host: 'host'
+      port: 22
+      # private_key: ''
+
+  driver:
+    name: zfs-csi
+    reclaim_policy: retain
+    storage_class: 'iscsi'
+    default_class: false
+
+  iscsi:
+    # base_iqn: ''
+    target_portal: '127.0.0.1'
+    attributes:
+      authentication: '0'
+      demo_mode_write_protect: '0'
+      generate_node_acls: '1'
+      cache_dynamic_acls: '1'
+
+  zfs:
+    parent_dataset: 'tank/csi/'
+    attributes:
+      compression: lz4
