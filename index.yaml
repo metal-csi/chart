@@ -11,4 +11,14 @@ entries:
     urls:
     - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha5/zed-csi-0.0.1-alpha5.tgz
     version: 0.0.1-alpha5
-generated: "2021-09-08T03:39:45.594047436Z"
+  - apiVersion: v2
+    appVersion: v0.0.1-alpha11
+    created: "2021-09-09T04:33:01.404621352Z"
+    description: A Helm chart for Kubernetes
+    digest: c89824e400695c4550be221dedbdc5063b1a9f9d7178cb80dda61656808bf44a
+    name: zed-csi
+    type: application
+    urls:
+    - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha11/zed-csi-0.0.1-alpha11.tgz
+    version: 0.0.1-alpha11
+generated: "2021-09-09T04:33:01.404632053Z"
