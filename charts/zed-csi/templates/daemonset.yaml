@@ -23,38 +23,58 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "zed-csi.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: csi-node-driver-registrar
-          image: ghcr.io/homelab-library/csi-node-driver-registrar:2.0.1
+          image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.3.0
           args:
-            - '--v=5'
-            - '--csi-address=$(ADDRESS)'
-            - '--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)'
+            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
+            - '--kubelet-registration-path=/var/lib/kubelet/plugins_registry/zed-csi/csi.sock'
           env:
-            - name: ADDRESS
-              value: /plugin/csi.sock
-            - name: DRIVER_REG_SOCK_PATH
-              value: /var/lib/kubelet/plugins_registry/zed-csi/csi.sock
+            {{- include "zed-csi.csiHelperEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+
+        {{/*
+        - name: csi-attacher
+          image: k8s.gcr.io/sig-storage/csi-attacher:v3.3.0
+          args:
+            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
+            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
+          env:
+            {{- include "zed-csi.csiHelperEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+
+        - name: csi-provisioner
+          image: k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
+          args:
+            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
+            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
+          env:
+            {{- include "zed-csi.csiHelperEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+        */}}
+
+        - name: zed-csi
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - -l
+            - debug
+            - --node-id
+            - $(KUBE_NODE_NAME)
+          env:
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-          volumeMounts:
-            - name: plugin-dir
-              mountPath: /plugin
-            - name: registration-dir
-              mountPath: /registration
-        - name: zed-csi-driver
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

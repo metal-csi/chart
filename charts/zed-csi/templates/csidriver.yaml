@@ -6,6 +6,6 @@ metadata:
     {{- include "zed-csi.labels" . | nindent 4 }}
 spec:
   attachRequired: false
-  podInfoOnMount: false
+  podInfoOnMount: true
   volumeLifecycleModes:
     - Persistent

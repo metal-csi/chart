@@ -71,3 +71,42 @@ Create the name of the service account to use
 {{- default "default" .Values.clusterRole.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Common arguments used for CSI helpers, such as node-driver-registrar
+*/}}
+{{- define "zed-csi.csiHelperArgs" -}}
+- '--v=5'
+- '--csi-address=$(ADDRESS)'
+{{- end }}
+
+{{/*
+Common arguments used for CSI helpers, such as node-driver-registrar
+*/}}
+{{- define "zed-csi.csiHelperLeaderArgs" -}}
+- --leader-election
+- --leader-election-namespace={{ .Release.Namespace }}
+- --timeout=90s
+{{- end }}
+
+{{/*
+Common env vars used for CSI helpers, such as node-driver-registrar
+*/}}
+{{- define "zed-csi.csiHelperEnv" -}}
+- name: ADDRESS
+  value: /plugin/csi.sock
+- name: KUBE_NODE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: spec.nodeName
+{{- end }}
+
+{{/*
+Common env vars used for CSI helpers, such as node-driver-registrar
+*/}}
+{{- define "zed-csi.csiHelperVolumeMounts" -}}
+- name: plugin-dir
+  mountPath: /plugin
+- name: registration-dir
+  mountPath: /registration
+{{- end }}
