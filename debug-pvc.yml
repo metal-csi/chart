@@ -1,0 +1,37 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: zed-csi-debug-pvc
+  namespace: csi
+  labels:
+    name: zed-csi-debug
+spec:
+  storageClassName: 'zed-csi-debug-class'
+  accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+  namespace: csi
+  labels:
+    name: testpod
+spec:
+  containers:
+    - name: redis
+      image: redis
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: '/pvc'
+          name: pvc-path
+  volumes:
+    - name: pvc-path
+      persistentVolumeClaim:
+        claimName: zed-csi-debug-pvc

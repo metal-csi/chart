@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zed-csi.fullname" . }}-controller
+  labels:
+    {{- include "zed-csi.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "zed-csi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "zed-csi.selectorLabels" . | nindent 8 }}
+
+    spec:
+      hostNetwork: true
+      serviceAccountName: {{ include "zed-csi.serviceAccountName" . }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+        - name: csi-provisioner
+          image: k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
+          args:
+            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
+            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
+          env:
+            {{- include "zed-csi.csiControllerHelperEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+
+        - name: csi-attacher
+          image: k8s.gcr.io/sig-storage/csi-attacher:v3.3.0
+          args:
+            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
+            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
+          env:
+            {{- include "zed-csi.csiControllerHelperEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+
+        - name: zed-csi-controller
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [-l, debug, --node-id, $(KUBE_NODE_NAME), --csi-path, /plugin/csi-controller.sock, --csi-name, {{ include "zed-csi.drivername" . }}]
+          env:
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: plugin-dir
+              mountPath: /plugin
+            - name: pods-mount-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: 'Bidirectional'
+            - name: zed-csi-yml
+              mountPath: /etc/zed-csi.yml
+              subPath: zed-csi.yml
+
+      volumes:
+        - name: plugin-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registry/zed-csi
+            type: DirectoryOrCreate
+
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registry
+            type: Directory
+
+        - name: pods-mount-dir
+          hostPath:
+            path: /var/lib/kubelet/pods
+            type: Directory
+
+        - name: zed-csi-yml
+          configMap:
+            name: {{ include "zed-csi.fullname" . }}

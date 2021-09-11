@@ -1,19 +1,22 @@
 # Default values for zed-csi.
 replicaCount: 1
 
+csidriver:
+  name: "zed-csi"
+
 image:
   repository: ghcr.io/zed-csi/zed-csi
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ''
 
-imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
 
-serviceAccount:
-  # Specifies whether a service account should be created
+rbac:
   create: true
+
+serviceAccount:
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -21,8 +24,6 @@ serviceAccount:
   name: ''
 
 clusterRole:
-  # Specifies whether a service account should be created
-  create: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -46,6 +47,15 @@ tolerations: []
 
 affinity: {}
 
+sshConnections: []
+  # primary:
+  #   sudo: true
+  #   host: localhost
+  #   port: 22
+  #   user: username
+  #   private_key: |-
+  #     ...
+
 config:
   node:
     initiator_iqn_mode:
@@ -53,21 +63,6 @@ config:
     control_mode:
       type: local
       sudo: true
-
-  controller:
-    control_mode:
-      type: ssh
-      sudo: true
-      user: 'user'
-      host: 'host'
-      port: 22
-      # private_key: ''
-
-  driver:
-    name: zfs-csi
-    reclaim_policy: retain
-    storage_class: 'iscsi'
-    default_class: false
 
   iscsi:
     # base_iqn: ''

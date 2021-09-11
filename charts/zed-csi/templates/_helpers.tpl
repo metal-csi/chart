@@ -6,6 +6,13 @@ Expand the name of the chart.
 {{- end }}
 
 {{/*
+Expand the name of the chart.
+*/}}
+{{- define "zed-csi.drivername" -}}
+{{- .Values.csidriver.name }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
@@ -54,7 +61,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "zed-csi.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
+{{- if .Values.rbac.create }}
 {{- default (include "zed-csi.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
@@ -65,7 +72,7 @@ Create the name of the service account to use
 Create the name of the service account to use
 */}}
 {{- define "zed-csi.clusterRoleName" -}}
-{{- if .Values.clusterRole.create }}
+{{- if .Values.rbac.create }}
 {{- default (include "zed-csi.fullname" .) .Values.clusterRole.name }}
 {{- else }}
 {{- default "default" .Values.clusterRole.name }}
@@ -95,6 +102,18 @@ Common env vars used for CSI helpers, such as node-driver-registrar
 {{- define "zed-csi.csiHelperEnv" -}}
 - name: ADDRESS
   value: /plugin/csi.sock
+- name: KUBE_NODE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: spec.nodeName
+{{- end }}
+
+{{/*
+Common env vars used for CSI helpers, such as node-driver-registrar
+*/}}
+{{- define "zed-csi.csiControllerHelperEnv" -}}
+- name: ADDRESS
+  value: /plugin/csi-controller.sock
 - name: KUBE_NODE_NAME
   valueFrom:
     fieldRef:

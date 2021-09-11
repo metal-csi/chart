@@ -1,0 +1,21 @@
+{{- $cname := .Release.Name -}}
+{{- $root := . -}}
+{{- range $key, $val := .Values.sshConnections }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $cname }}-ssh-{{ $key }}"
+  labels:
+    {{- include "zed-csi.labels" $root | nindent 4 }}
+stringData:
+  type: "ssh"
+  sudo: "{{ $val.sudo }}"
+  sshHost: "{{ $val.host }}"
+  sshPort: "{{ $val.port }}"
+  sshUser: "{{ $val.user }}"
+  sshKey: |-
+    {{- $val.privateKey | nindent 4 }}
+
+{{- end }}

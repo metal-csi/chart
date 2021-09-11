@@ -1,7 +1,7 @@
 apiVersion: v2
 name: zed-csi
-description: A Helm chart for Kubernetes
+description: CSI Driver for ZFS with iscsi or nfs
 
 type: application
-version: "0.0.1-alpha11"
-appVersion: "v0.0.1-alpha11"
+version: '0.0.1-alpha15'
+appVersion: 'v0.0.1-alpha15'

@@ -1,0 +1,25 @@
+{{- $cname := .Release.Name -}}
+{{- $relns := .Release.Namespace -}}
+{{- $root := . -}}
+{{- range $key, $val := .Values.storageClasses }}
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ $key }}
+  labels:
+    {{- include "zed-csi.labels" $root | nindent 4 }}
+provisioner: {{ include "zed-csi.drivername" $root }}
+reclaimPolicy: Retain #TODO: Pull from values
+allowVolumeExpansion: false
+volumeBindingMode: Immediate #TODO: Pull from values
+
+parameters:
+  type: iscsi #TODO: Pull from values
+  csi.storage.k8s.io/provisioner-secret-name: "{{ $cname }}-ssh-{{ $val.sshConnection }}"
+  csi.storage.k8s.io/provisioner-secret-namespace: {{ $relns }}
+  csi.storage.k8s.io/controller-publish-secret-name: "{{ $cname }}-ssh-{{ $val.sshConnection }}"
+  csi.storage.k8s.io/controller-publish-secret-namespace: {{ $relns }}
+
+{{- end }}

@@ -1,11 +1,11 @@
 apiVersion: storage.k8s.io/v1
 kind: CSIDriver
 metadata:
-  name: {{ include "zed-csi.fullname" . }}
+  name: {{ include "zed-csi.drivername" . }}
   labels:
     {{- include "zed-csi.labels" . | nindent 4 }}
 spec:
-  attachRequired: false
+  attachRequired: true
   podInfoOnMount: true
   volumeLifecycleModes:
     - Persistent
