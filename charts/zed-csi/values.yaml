@@ -47,6 +47,11 @@ tolerations: []
 
 affinity: {}
 
+storageClasses: {}
+  # primary-iscsi:
+  #   type: iscsi
+  #   sshConnection: primary
+
 sshConnections: []
   # primary:
   #   sudo: true
@@ -61,8 +66,9 @@ config:
     initiator_iqn_mode:
       type: detect
     control_mode:
-      type: local
-      sudo: true
+      type: chroot
+      sudo: false
+      path: '/node/'
 
   iscsi:
     # base_iqn: ''
