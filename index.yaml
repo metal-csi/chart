@@ -12,6 +12,16 @@ entries:
     - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha5/zed-csi-0.0.1-alpha5.tgz
     version: 0.0.1-alpha5
   - apiVersion: v2
+    appVersion: v0.0.1-alpha16
+    created: "2021-09-12T02:51:39.365200304Z"
+    description: CSI Driver for ZFS with iscsi or nfs
+    digest: ab05142f8f6bf2543e48c7344f6ee4c59eb35cc21613541c45552efd0cceb7eb
+    name: zed-csi
+    type: application
+    urls:
+    - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha16/zed-csi-0.0.1-alpha16.tgz
+    version: 0.0.1-alpha16
+  - apiVersion: v2
     appVersion: v0.0.1-alpha15
     created: "2021-09-11T04:14:30.660463512Z"
     description: CSI Driver for ZFS with iscsi or nfs
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha11/zed-csi-0.0.1-alpha11.tgz
     version: 0.0.1-alpha11
-generated: "2021-09-11T04:14:30.660487313Z"
+generated: "2021-09-12T02:51:39.365237906Z"
