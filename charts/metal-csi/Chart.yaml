@@ -3,5 +3,5 @@ name: metal-csi
 description: CSI Driver for bare metal cluster storage
 
 type: application
-version: '0.0.1-alpha22'
-appVersion: 'v0.0.1-alpha22'
+version: '0.0.1-alpha23'
+appVersion: 'v0.0.1-alpha23'
