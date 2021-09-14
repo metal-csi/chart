@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: {{ include "zed-csi.fullname" . }}-controller
+  name: {{ include "metal-csi.fullname" . }}-node
   labels:
-    {{- include "zed-csi.labels" . | nindent 4 }}
+    {{- include "metal-csi.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "zed-csi.selectorLabels" . | nindent 6 }}
+      {{- include "metal-csi.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -15,11 +15,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "zed-csi.selectorLabels" . | nindent 8 }}
+        {{- include "metal-csi.selectorLabels" . | nindent 8 }}
 
     spec:
       hostNetwork: true
-      serviceAccountName: {{ include "zed-csi.serviceAccountName" . }}
+      serviceAccountName: {{ include "metal-csi.serviceAccountName" . }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -37,33 +37,20 @@ spec:
       {{- end }}
 
       containers:
-        - name: csi-provisioner
-          image: k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
+        - name: csi-node-driver-registrar
+          image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.3.0
           args:
-            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
-            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
-            - --extra-create-metadata
-            - --volume-name-prefix
-            - {{ include "zed-csi.drivername" . }}
+            {{- include "metal-csi.csiHelperArgs" . | nindent 12 }}
+            - '--kubelet-registration-path=/var/lib/kubelet/plugins_registry/metal-csi/csi.sock'
           env:
-            {{- include "zed-csi.csiControllerHelperEnv" . | nindent 12 }}
+            {{- include "metal-csi.csiHelperEnv" . | nindent 12 }}
           volumeMounts:
-            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
+            {{- include "metal-csi.csiHelperVolumeMounts" . | nindent 12 }}
 
-        - name: csi-attacher
-          image: k8s.gcr.io/sig-storage/csi-attacher:v3.3.0
-          args:
-            {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
-            {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
-          env:
-            {{- include "zed-csi.csiControllerHelperEnv" . | nindent 12 }}
-          volumeMounts:
-            {{- include "zed-csi.csiHelperVolumeMounts" . | nindent 12 }}
-
-        - name: zed-csi-controller
+        - name: metal-csi-node
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [-l, debug, --node-id, $(KUBE_NODE_NAME), --csi-path, /plugin/csi-controller.sock, --csi-name, {{ include "zed-csi.drivername" . }}]
+          args: [-l, debug, --node-id, $(KUBE_NODE_NAME), --csi-path, /plugin/csi.sock, --csi-name, {{ include "metal-csi.drivername" . }}]
           env:
             - name: KUBE_NODE_NAME
               valueFrom:
@@ -83,14 +70,17 @@ spec:
             - name: pods-mount-dir
               mountPath: /var/lib/kubelet/pods
               mountPropagation: 'Bidirectional'
-            - name: zed-csi-yml
-              mountPath: /etc/zed-csi.yml
-              subPath: zed-csi.yml
+            - name: node-root
+              mountPath: /node
+              mountPropagation: 'Bidirectional'
+            - name: metal-csi-yml
+              mountPath: /etc/metal-csi.yml
+              subPath: metal-csi.yml
 
       volumes:
         - name: plugin-dir
           hostPath:
-            path: /var/lib/kubelet/plugins_registry/zed-csi
+            path: /var/lib/kubelet/plugins_registry/metal-csi
             type: DirectoryOrCreate
 
         - name: registration-dir
@@ -103,6 +93,11 @@ spec:
             path: /var/lib/kubelet/pods
             type: Directory
 
-        - name: zed-csi-yml
+        - name: node-root
+          hostPath:
+            path: /
+            type: Directory
+
+        - name: metal-csi-yml
           configMap:
-            name: {{ include "zed-csi.fullname" . }}
+            name: {{ include "metal-csi.fullname" . }}

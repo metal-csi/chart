@@ -9,8 +9,8 @@ kind: StorageClass
 metadata:
   name: {{ $key }}
   labels:
-    {{- include "zed-csi.labels" $root | nindent 4 }}
-provisioner: {{ include "zed-csi.drivername" $root }}
+    {{- include "metal-csi.labels" $root | nindent 4 }}
+provisioner: {{ include "metal-csi.drivername" $root }}
 reclaimPolicy: Delete
 allowVolumeExpansion: false
 volumeBindingMode: Immediate

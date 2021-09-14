@@ -2,12 +2,12 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: zed-csi-debug-pvc
+  name: metal-csi-debug-pvc
   namespace: csi
   labels:
-    name: zed-csi-debug
+    name: metal-csi-debug
 spec:
-  storageClassName: 'zed-csi-debug-class'
+  storageClassName: 'metal-csi-debug-class'
   accessModes:
     - ReadWriteOnce
     - ReadWriteMany
@@ -19,12 +19,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: zed-csi-debug-pvc-nfs
+  name: metal-csi-debug-pvc-nfs
   namespace: csi
   labels:
-    name: zed-csi-debug
+    name: metal-csi-debug
 spec:
-  storageClassName: 'zed-csi-debug-class-nfs'
+  storageClassName: 'metal-csi-debug-class-nfs'
   accessModes:
     - ReadWriteOnce
     - ReadWriteMany
@@ -53,7 +53,7 @@ spec:
   volumes:
     - name: pvc-path-iscsi
       persistentVolumeClaim:
-        claimName: zed-csi-debug-pvc
+        claimName: metal-csi-debug-pvc
     - name: pvc-path-nfs
       persistentVolumeClaim:
-        claimName: zed-csi-debug-pvc-nfs
+        claimName: metal-csi-debug-pvc-nfs

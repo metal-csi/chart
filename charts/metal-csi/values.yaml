@@ -1,11 +1,11 @@
-# Default values for zed-csi.
+# Default values for metal-csi.
 replicaCount: 1
 
 csidriver:
-  name: "zed-csi"
+  name: "metal-csi"
 
 image:
-  repository: ghcr.io/zed-csi/zed-csi
+  repository: ghcr.io/metal-csi/metal-csi
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ''

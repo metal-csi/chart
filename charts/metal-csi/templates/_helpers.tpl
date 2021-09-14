@@ -1,14 +1,14 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "zed-csi.name" -}}
+{{- define "metal-csi.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "zed-csi.drivername" -}}
+{{- define "metal-csi.drivername" -}}
 {{- .Values.csidriver.name }}
 {{- end }}
 
@@ -17,7 +17,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "zed-csi.fullname" -}}
+{{- define "metal-csi.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -33,16 +33,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "zed-csi.chart" -}}
+{{- define "metal-csi.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "zed-csi.labels" -}}
-helm.sh/chart: {{ include "zed-csi.chart" . }}
-{{ include "zed-csi.selectorLabels" . }}
+{{- define "metal-csi.labels" -}}
+helm.sh/chart: {{ include "metal-csi.chart" . }}
+{{ include "metal-csi.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -52,17 +52,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "zed-csi.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "zed-csi.name" . }}
+{{- define "metal-csi.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "metal-csi.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "zed-csi.serviceAccountName" -}}
+{{- define "metal-csi.serviceAccountName" -}}
 {{- if .Values.rbac.create }}
-{{- default (include "zed-csi.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "metal-csi.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -71,9 +71,9 @@ Create the name of the service account to use
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "zed-csi.clusterRoleName" -}}
+{{- define "metal-csi.clusterRoleName" -}}
 {{- if .Values.rbac.create }}
-{{- default (include "zed-csi.fullname" .) .Values.clusterRole.name }}
+{{- default (include "metal-csi.fullname" .) .Values.clusterRole.name }}
 {{- else }}
 {{- default "default" .Values.clusterRole.name }}
 {{- end }}
@@ -82,7 +82,7 @@ Create the name of the service account to use
 {{/*
 Common arguments used for CSI helpers, such as node-driver-registrar
 */}}
-{{- define "zed-csi.csiHelperArgs" -}}
+{{- define "metal-csi.csiHelperArgs" -}}
 - '--v=5'
 - '--csi-address=$(ADDRESS)'
 {{- end }}
@@ -90,7 +90,7 @@ Common arguments used for CSI helpers, such as node-driver-registrar
 {{/*
 Common arguments used for CSI helpers, such as node-driver-registrar
 */}}
-{{- define "zed-csi.csiHelperLeaderArgs" -}}
+{{- define "metal-csi.csiHelperLeaderArgs" -}}
 - --leader-election
 - --leader-election-namespace={{ .Release.Namespace }}
 - --timeout=90s
@@ -99,7 +99,7 @@ Common arguments used for CSI helpers, such as node-driver-registrar
 {{/*
 Common env vars used for CSI helpers, such as node-driver-registrar
 */}}
-{{- define "zed-csi.csiHelperEnv" -}}
+{{- define "metal-csi.csiHelperEnv" -}}
 - name: ADDRESS
   value: /plugin/csi.sock
 - name: KUBE_NODE_NAME
@@ -111,7 +111,7 @@ Common env vars used for CSI helpers, such as node-driver-registrar
 {{/*
 Common env vars used for CSI helpers, such as node-driver-registrar
 */}}
-{{- define "zed-csi.csiControllerHelperEnv" -}}
+{{- define "metal-csi.csiControllerHelperEnv" -}}
 - name: ADDRESS
   value: /plugin/csi-controller.sock
 - name: KUBE_NODE_NAME
@@ -123,7 +123,7 @@ Common env vars used for CSI helpers, such as node-driver-registrar
 {{/*
 Common env vars used for CSI helpers, such as node-driver-registrar
 */}}
-{{- define "zed-csi.csiHelperVolumeMounts" -}}
+{{- define "metal-csi.csiHelperVolumeMounts" -}}
 - name: plugin-dir
   mountPath: /plugin
 - name: registration-dir

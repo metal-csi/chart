@@ -1,3 +1,3 @@
-# Zed CSI Helm Chart
+# Metal CSI Helm Chart
 
 TODO
