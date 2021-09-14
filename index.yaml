@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   metal-csi:
   - apiVersion: v2
+    appVersion: v0.0.1-alpha23
+    created: "2021-09-14T04:30:42.862134812Z"
+    description: CSI Driver for bare metal cluster storage
+    digest: 7de87937e2aa23cf6d50c277d24744febad091bd6fcf9a8795964473cac9b468
+    name: metal-csi
+    type: application
+    urls:
+    - https://github.com/metal-csi/chart/releases/download/metal-csi-0.0.1-alpha23/metal-csi-0.0.1-alpha23.tgz
+    version: 0.0.1-alpha23
+  - apiVersion: v2
     appVersion: v0.0.1-alpha22
     created: "2021-09-14T04:27:14.364998492Z"
     description: CSI Driver for bare metal cluster storage
@@ -62,4 +72,4 @@ entries:
     urls:
     - https://github.com/zed-csi/chart/releases/download/zed-csi-0.0.1-alpha11/zed-csi-0.0.1-alpha11.tgz
     version: 0.0.1-alpha11
-generated: "2021-09-14T04:27:14.365022793Z"
+generated: "2021-09-14T04:30:42.862160113Z"
