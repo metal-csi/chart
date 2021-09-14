@@ -42,6 +42,9 @@ spec:
           args:
             {{- include "zed-csi.csiHelperArgs" . | nindent 12 }}
             {{- include "zed-csi.csiHelperLeaderArgs" . | nindent 12 }}
+            - --extra-create-metadata
+            - --volume-name-prefix
+            - {{ include "zed-csi.drivername" . }}
           env:
             {{- include "zed-csi.csiControllerHelperEnv" . | nindent 12 }}
           volumeMounts:

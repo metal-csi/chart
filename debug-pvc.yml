@@ -16,6 +16,23 @@ spec:
       storage: 1Mi
 
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: zed-csi-debug-pvc-nfs
+  namespace: csi
+  labels:
+    name: zed-csi-debug
+spec:
+  storageClassName: 'zed-csi-debug-class-nfs'
+  accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -29,9 +46,14 @@ spec:
       image: redis
       imagePullPolicy: IfNotPresent
       volumeMounts:
-        - mountPath: '/pvc'
-          name: pvc-path
+        - mountPath: '/pvc-iscsi'
+          name: pvc-path-iscsi
+        - mountPath: '/pvc-nfs'
+          name: pvc-path-nfs
   volumes:
-    - name: pvc-path
+    - name: pvc-path-iscsi
       persistentVolumeClaim:
         claimName: zed-csi-debug-pvc
+    - name: pvc-path-nfs
+      persistentVolumeClaim:
+        claimName: zed-csi-debug-pvc-nfs

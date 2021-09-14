@@ -51,8 +51,25 @@ storageClasses: {}
   # primary-iscsi:
   #   type: iscsi
   #   sshConnection: primary
-
-sshConnections: []
+  #   baseIqn: "iqn.2014-12.example.server:"
+  #   targetPortal: '127.0.0.1'
+  #   attr:
+  #     authentication: '0'
+  #     demo_mode_write_protect: '0'
+  #     generate_node_acls: '1'
+  #     cache_dynamic_acls: '1'
+  #   zfs:
+  #     parentDataset: 'tank/iscsiblocks/'
+  # primary-nfs:
+  #   type: nfs
+  #   sshConnection: primary
+  #   nfsHost: "localhost"
+  #   zfs:
+  #     parentDataset: 'tank/nfs/'
+  #     attr:
+  #       compression: lz4
+        
+sshConnections: {}
   # primary:
   #   sudo: true
   #   host: localhost
@@ -63,23 +80,7 @@ sshConnections: []
 
 config:
   node:
-    initiator_iqn_mode:
-      type: detect
     control_mode:
       type: chroot
       sudo: false
       path: '/node/'
-
-  iscsi:
-    # base_iqn: ''
-    target_portal: '127.0.0.1'
-    attributes:
-      authentication: '0'
-      demo_mode_write_protect: '0'
-      generate_node_acls: '1'
-      cache_dynamic_acls: '1'
-
-  zfs:
-    parent_dataset: 'tank/csi/'
-    attributes:
-      compression: lz4

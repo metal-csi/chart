@@ -11,12 +11,27 @@ metadata:
   labels:
     {{- include "zed-csi.labels" $root | nindent 4 }}
 provisioner: {{ include "zed-csi.drivername" $root }}
-reclaimPolicy: Retain #TODO: Pull from values
+reclaimPolicy: Delete
 allowVolumeExpansion: false
-volumeBindingMode: Immediate #TODO: Pull from values
+volumeBindingMode: Immediate
 
 parameters:
-  type: iscsi #TODO: Pull from values
+  {{- if eq $val.type "iscsi" }}
+  type: iscsi
+  baseIqn: "{{ $val.baseIqn }}"
+  targetPortal: "{{ $val.targetPortal }}"
+  {{- end }}
+  {{- if eq $val.type "nfs" }}
+  type: nfs
+  host: "{{ $val.nfsHost }}"
+  {{- end }}
+  {{- range $attr, $attr_val := $val.attr }}
+  attr.{{ $attr }}: "{{ $attr_val }}"
+  {{- end }}
+  zfs.parentDataset: "{{ $val.zfs.parentDataset }}"
+  {{- range $attr, $attr_val := $val.zfs.attr }}
+  zfs.attr.{{ $attr }}: "{{ $attr_val }}"
+  {{- end }}
   csi.storage.k8s.io/provisioner-secret-name: "{{ $cname }}-ssh-{{ $val.sshConnection }}"
   csi.storage.k8s.io/provisioner-secret-namespace: {{ $relns }}
   csi.storage.k8s.io/controller-publish-secret-name: "{{ $cname }}-ssh-{{ $val.sshConnection }}"
